@@ -1,4 +1,3 @@
-/* page.module.css */
 .main {
   display: flex;
   flex-direction: column;
@@ -15,7 +14,7 @@
 }
 
 .header h1 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin: 0;
   color: #333;
 }
@@ -25,27 +24,47 @@
   color: #666;
 }
 
-.container {
+.servicesContainer {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin: 2rem 0;
 }
 
-.category {
+.service {
   display: block;
   padding: 1rem 2rem;
-  margin: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: #fff;
-  background-color: #007bff;
+  background-color: #28a745;
   border-radius: 8px;
   text-decoration: none;
   transition: background-color 0.3s;
 }
 
-.category:hover {
-  background-color: #0056b3;
+.service:hover {
+  background-color: #218838;
+}
+
+.featureSection {
+  margin-top: 2rem;
+  text-align: center;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.feature h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.feature p {
+  font-size: 1.2rem;
+  color: #555;
 }
 
 .widgetSection {
@@ -58,9 +77,8 @@
 
 .widget {
   margin: 1rem auto;
-  width: 1px; /* Adjust width as needed */
-  height: 30px; /* Adjust height as needed */
-  border: 1px solid #ddd;
+  width: 480px;
+  height: 130px;
   border-radius: 10px;
   background-color: #333;
   display: flex;
@@ -75,26 +93,4 @@
   color: #fff;
   width: 100%;
   text-align: center;
-}
-.textBox {
-  display: flex;
-  justify-content: space-between;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  background-color: white;
-  margin: 1rem 0;
-}
-
-.textBox .left,
-.textBox .right {
-  width: 25%; /* Adjust the width as needed */
-}
-
-.textBox .left {
-  text-align: left;
-}
-
-.textBox .right {
-  text-align: right;
 }
