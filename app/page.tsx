@@ -2,6 +2,7 @@
 
 import React from "react";
 import styles from "./page.module.css";
+import Chat from "./components/chat";
 
 const Home = () => {
   const categories = {
@@ -28,4 +29,3 @@ const Home = () => {
 };
 
 export default Home;
-
