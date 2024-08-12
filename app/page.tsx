@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import styles from "./page.module.css";
-import Chat from "../../components/chat"; // Import the Chat component
+import Chat from "./components/chat"; // Import the Chat component
 
 const Home = () => {
   const categories = {
