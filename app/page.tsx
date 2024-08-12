@@ -10,14 +10,20 @@ declare global {
 }
 
 const Home = () => {
-  const categories = {
+  const newCategories = {
     "Car Rentals": "car-rentals",
     "Flights": "flights",
     "Hotels": "hotels",
     "Vacation Packages": "vacation-packages",
     "Cruises": "cruises",
     "Travel Insurance": "travel-insurance",
-    "All Services": "all-services",
+  };
+
+  const existingCategories = {
+    "Voice chat-GPT4o": "basic-chat",
+    "Function calling": "function-calling",
+    "Knowledge Base": "file-search",
+    All: "all",
   };
 
   useEffect(() => {
@@ -108,7 +114,14 @@ const Home = () => {
         <p>From flights to car rentals, we've got you covered. Discover the best deals and travel packages.</p>
       </header>
       <div className={styles.servicesContainer}>
-        {Object.entries(categories).map(([name, url]) => (
+        {/* Existing Buttons */}
+        {Object.entries(existingCategories).map(([name, url]) => (
+          <a key={name} className={styles.existingCategory} href={`/examples/${url}`}>
+            {name}
+          </a>
+        ))}
+        {/* New Travel Buttons */}
+        {Object.entries(newCategories).map(([name, url]) => (
           <a key={name} className={styles.service} href={`/services/${url}`}>
             {name}
           </a>
@@ -125,7 +138,7 @@ const Home = () => {
           {/* The Vapi widget will be injected here */}
         </div>
         <div className={styles.center}>
-          <h3>Need help? Call us at +1 (310) 776 3204 – We're available 24/7</h3> 
+          <h3>Need help? Call us at +1 (310) 776 3204 – We're available 24/7</h3>
         </div>
       </section>
       <footer className={styles.footer}>
