@@ -1,29 +1,113 @@
-.comparisonBox {
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 2rem;
-  width: 100%;
-  max-width: 600px;
-}
-
-.priceRow {
+.main {
   display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ddd;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  min-height: 100vh;
 }
 
-.priceSource {
-  font-weight: bold;
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.priceValue {
+.header h1 {
+  font-size: 3rem;
+  margin: 0;
   color: #333;
 }
 
-.priceValueBest {
-  color: #28a745;
-  font-weight: bold;
+.header p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Existing AI-related buttons */
+.existingCategory {
+  display: block;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #007bff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.existingCategory:hover {
+  background-color: #0056b3;
+}
+
+/* New travel-related buttons */
+.service {
+  display: block;
+  padding: 1rem 2rem;
+  font-size: 1.4rem;
+  color: #fff;
+  background-color: #28a745;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.service:hover {
+  background-color: #218838;
+}
+
+.featureSection {
+  margin-top: 2rem;
+  text-align: center;
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.feature h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.feature p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.widgetSection {
+  margin-top: 2rem;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.widget {
+  margin: 1rem auto;
+  width: 480px;
+  height: 130px;
+  border-radius: 10px;
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  text-align: center;
 }
