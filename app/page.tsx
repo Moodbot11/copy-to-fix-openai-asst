@@ -36,7 +36,33 @@ const Home = () => {
     };
 
     fetchPrices();
+const http = require('https');
 
+const options = {
+	method: 'GET',
+	hostname: 'compare-flight-prices.p.rapidapi.com',
+	port: null,
+	path: '/GetPricesAPI/GetPrices.aspx',
+	headers: {
+		'x-rapidapi-key': '9fbfad16e4mshc8bff8c81c7cdcfp12a178jsnf38a2c8492f2',
+		'x-rapidapi-host': 'compare-flight-prices.p.rapidapi.com'
+	}
+};
+
+const req = http.request(options, function (res) {
+	const chunks = [];
+
+	res.on('data', function (chunk) {
+		chunks.push(chunk);
+	});
+
+	res.on('end', function () {
+		const body = Buffer.concat(chunks);
+		console.log(body.toString());
+	});
+});
+
+req.end();    
     const assistant = "80aecc7e-9537-4240-91e6-642c0c5cb976"; // Substitute with your assistant ID
     const apiKey = "f5c80ab3-a42b-4544-a3a2-ff019e8b7913"; // Substitute with your Public key from Vapi Dashboard.
 
