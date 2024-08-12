@@ -1,21 +1,90 @@
-Skip to content
-moodbot11's projects
-moodbot11's projects
+"use client";
 
-Pro
+import React, { useEffect } from "react";
+import styles from "./page.module.css";
 
-internet-entity
+declare global {
+  interface Window {
+    vapiSDK: any;
+  }
+}
 
-lkjy0n687
+const Home = () => {
+  const categories = {
+    "Voice chat-GPT4o": "basic-chat",
+    "Function calling": "function-calling",
+    "Knowledge Base": "file-search",
+    All: "all",
+  };
 
-Changelog
-Help
-Docs
+  useEffect(() => {
+    const assistant = "80aecc7e-9537-4240-91e6-642c0c5cb976"; // Substitute with your assistant ID
+    const apiKey = "f5c80ab3-a42b-4544-a3a2-ff019e8b7913"; // Substitute with your Public key from Vapi Dashboard.
 
-Source
-Output
-app/page.tsx
+    const buttonConfig = {
+  position: "right", // "bottom" | "top" | "left" | "right" | "top-right" | "top-left" | "bottom-left" | "bottom-right"
+  offset: "465px", // decide how far the button should be from the edge
+  width: "480px", // min-width of the button
+  height: "130px", // height of the button
+  idle: { // button state when the call is not active.
+    color: `rgb(93, 254, 202)`, 
+    type: "pill", // or "round"
+    title: "Im here for you 24 hours a day?", // only required in case of Pill
+    subtitle: " Talk to me, lets fiqure it out.", // only required in case of pill
+    icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone.svg`,
+  },
+  loading: { // button state when the call is connecting
+    color: `rgb(93, 124, 202)`,
+    type: "pill", // or "round"
+    title: "Connecting...", // only required in case of Pill
+    subtitle: "Please wait", // only required in case of pill
+    icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
+  },
+  active: { // button state when the call is in progress or active.
+    color: `rgb(255, 0, 0)`,
+    type: "pill", // or "round"
+    title: "Im here with you now", // only required in case of Pill
+    subtitle: "End the call.", // only required in case of pill
+    icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg`,
+  },
+};
 
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    script.defer = true;
+    script.async = true;
+
+    script.onload = () => {
+      const vapiInstance = window.vapiSDK.run({
+        apiKey: apiKey,
+        assistant: assistant,
+        config: buttonConfig,
+        parentElement: document.getElementById('vapi-widget'), // Specify the container
+      });
+
+      vapiInstance.on('speech-start', () => {
+        console.log('Speech has started');
+      });
+
+      vapiInstance.on('speech-end', () => {
+        console.log('Speech has ended');
+      });
+
+      vapiInstance.on('call-start', () => {
+        console.log('Call has started');
+      });
+
+      vapiInstance.on('call-end', () => {
+        console.log('Call has stopped');
+      });
+
+      vapiInstance.on('volume-level', (volume) => {
+        console.log(`Assistant volume level: ${volume}`);
+      });
+
+      vapiInstance.on('message', (message) => {
+        console.log(message);
+      });
 
       vapiInstance.on('error', (e) => {
         console.error(e);
@@ -68,27 +137,3 @@ app/page.tsx
 };
 
 export default Home;
-© 2024
-
-All systems normal.
-
-Command Menu
-⌘
-K
-Select a display theme:
-
-system
-
-light
-
-dark
-Home
-Documentation
-Guides
-Help
-Contact Sales
-Blog
-Changelog
-Pricing
-Enterprise
-internet-entity – Deployment Source – Vercel
