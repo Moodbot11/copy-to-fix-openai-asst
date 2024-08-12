@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -8,6 +10,12 @@ import Markdown from "react-markdown";
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs";
 
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
+}
+
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
@@ -17,7 +25,19 @@ const UserMessage = ({ text }: { text: string }) => {
   return <div className={styles.userMessage}>{text}</div>;
 };
 
-const AssistantMessage = ({ text }: { text: string }) => {
+const AssistantMessage = ({ text, selectedVoice }: { text: string, selectedVoice: SpeechSynthesisVoice | null }) => {
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+
+    synth.speak(utterance);
+  }, [text, selectedVoice]);
+
   return (
     <div className={styles.assistantMessage}>
       <Markdown>{text}</Markdown>
@@ -38,12 +58,12 @@ const CodeMessage = ({ text }: { text: string }) => {
   );
 };
 
-const Message = ({ role, text }: MessageProps) => {
+const Message = ({ role, text, selectedVoice }: { role: "user" | "assistant" | "code", text: string, selectedVoice: SpeechSynthesisVoice | null }) => {
   switch (role) {
     case "user":
       return <UserMessage text={text} />;
     case "assistant":
-      return <AssistantMessage text={text} />;
+      return <AssistantMessage text={text} selectedVoice={selectedVoice} />;
     case "code":
       return <CodeMessage text={text} />;
     default:
@@ -64,17 +84,21 @@ const Chat = ({
   const [messages, setMessages] = useState([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [threadId, setThreadId] = useState("");
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
 
-  // automatically scroll to bottom of chat
+  const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // create a new threadID when chat component created
   useEffect(() => {
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
@@ -86,21 +110,117 @@ const Chat = ({
     createThread();
   }, []);
 
-  const sendMessage = async (text) => {
+ useEffect(() => {
+    const synth = window.speechSynthesis;
+    const loadVoices = () => {
+      const availableVoices = synth.getVoices();
+      setVoices(availableVoices);
+      const defaultVoice = availableVoices.find(voice => voice.name === "Google UK English Male") || availableVoices[0];
+      setSelectedVoice(defaultVoice); // Set default voice to Robert American if available
+    };
+    loadVoices();
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setUserInput(transcript);
+        inputRef.current.value = transcript;
+        recognition.stop();
+        handleSubmit();
+      };
+
+      recognition.onend = () => {
+        recognition.start();
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error detected: ' + event.error);
+        recognition.stop();
+        recognition.start();
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } else {
+      console.error('Speech recognition not supported in this browser.');
+    }
+  }, []);
+
+  const sendMessage = async (text: string) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: text },
+    ]);
+    setUserInput("");
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           content: text,
         }),
       }
     );
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleReadableStream(stream);
+    if (response.ok) {
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } else {
+      console.error("Failed to send message:", response.statusText);
+    }
   };
 
-  const submitActionResult = async (runId, toolCallOutputs) => {
+  const handleReadableStream = (stream: AssistantStream) => {
+    stream.on("textCreated", () => appendMessage("assistant", ""));
+    stream.on("textDelta", (delta: any) => {
+      if (delta.value != null) {
+        appendToLastMessage(delta.value);
+      }
+    });
+    stream.on("imageFileDone", (image: any) => {
+      appendToLastMessage(`\n![${image.file_id}](/api/files/${image.file_id})\n`);
+    });
+    stream.on("toolCallCreated", (toolCall: any) => {
+      if (toolCall.type === "code_interpreter") {
+        appendMessage("code", "");
+      }
+    });
+    stream.on("toolCallDelta", (delta: any) => {
+      if (delta.type === "code_interpreter" && delta.code_interpreter.input) {
+        appendToLastMessage(delta.code_interpreter.input);
+      }
+    });
+    stream.on("event", (event: any) => {
+      if (event.event === "thread.run.requires_action") handleRequiresAction(event);
+      if (event.event === "thread.run.completed") setInputDisabled(false);
+    });
+  };
+
+  const handleRequiresAction = async (event: AssistantStreamEvent.ThreadRunRequiresAction) => {
+    const runId = event.data.id;
+    const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
+    const toolCallOutputs = await Promise.all(
+      toolCalls.map(async (toolCall) => {
+        const result = await functionCallHandler(toolCall);
+        return { output: result, tool_call_id: toolCall.id };
+      })
+    );
+    setInputDisabled(true);
+    await submitActionResult(runId, toolCallOutputs);
+  };
+
+  const submitActionResult = async (runId: string, toolCallOutputs: any) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/actions`,
       {
@@ -114,12 +234,31 @@ const Chat = ({
         }),
       }
     );
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleReadableStream(stream);
+    if (response.ok) {
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } else {
+      console.error("Failed to submit action result:", response.statusText);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const appendToLastMessage = (text: string) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+        text: lastMessage.text + text,
+      };
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
+  const appendMessage = (role: string, text: string) => {
+    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+  };
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!userInput.trim()) return;
     sendMessage(userInput);
     setMessages((prevMessages) => [
@@ -131,128 +270,11 @@ const Chat = ({
     scrollToBottom();
   };
 
-  /* Stream Event Handlers */
-
-  // textCreated - create new assistant message
-  const handleTextCreated = () => {
-    appendMessage("assistant", "");
-  };
-
-  // textDelta - append text to last assistant message
-  const handleTextDelta = (delta) => {
-    if (delta.value != null) {
-      appendToLastMessage(delta.value);
-    };
-    if (delta.annotations != null) {
-      annotateLastMessage(delta.annotations);
-    }
-  };
-
-  // imageFileDone - show image in chat
-  const handleImageFileDone = (image) => {
-    appendToLastMessage(`\n![${image.file_id}](/api/files/${image.file_id})\n`);
-  }
-
-  // toolCallCreated - log new tool call
-  const toolCallCreated = (toolCall) => {
-    if (toolCall.type != "code_interpreter") return;
-    appendMessage("code", "");
-  };
-
-  // toolCallDelta - log delta and snapshot for the tool call
-  const toolCallDelta = (delta, snapshot) => {
-    if (delta.type != "code_interpreter") return;
-    if (!delta.code_interpreter.input) return;
-    appendToLastMessage(delta.code_interpreter.input);
-  };
-
-  // handleRequiresAction - handle function call
-  const handleRequiresAction = async (
-    event: AssistantStreamEvent.ThreadRunRequiresAction
-  ) => {
-    const runId = event.data.id;
-    const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
-    // loop over tool calls and call function handler
-    const toolCallOutputs = await Promise.all(
-      toolCalls.map(async (toolCall) => {
-        const result = await functionCallHandler(toolCall);
-        return { output: result, tool_call_id: toolCall.id };
-      })
-    );
-    setInputDisabled(true);
-    submitActionResult(runId, toolCallOutputs);
-  };
-
-  // handleRunCompleted - re-enable the input form
-  const handleRunCompleted = () => {
-    setInputDisabled(false);
-  };
-
-  const handleReadableStream = (stream: AssistantStream) => {
-    // messages
-    stream.on("textCreated", handleTextCreated);
-    stream.on("textDelta", handleTextDelta);
-
-    // image
-    stream.on("imageFileDone", handleImageFileDone);
-
-    // code interpreter
-    stream.on("toolCallCreated", toolCallCreated);
-    stream.on("toolCallDelta", toolCallDelta);
-
-    // events without helpers yet (e.g. requires_action and run.done)
-    stream.on("event", (event) => {
-      if (event.event === "thread.run.requires_action")
-        handleRequiresAction(event);
-      if (event.event === "thread.run.completed") handleRunCompleted();
-    });
-  };
-
-  /*
-    =======================
-    === Utility Helpers ===
-    =======================
-  */
-
-  const appendToLastMessage = (text) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-        text: lastMessage.text + text,
-      };
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
-    });
-  };
-
-  const appendMessage = (role, text) => {
-    setMessages((prevMessages) => [...prevMessages, { role, text }]);
-  };
-
-  const annotateLastMessage = (annotations) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-      };
-      annotations.forEach((annotation) => {
-        if (annotation.type === 'file_path') {
-          updatedLastMessage.text = updatedLastMessage.text.replaceAll(
-            annotation.text,
-            `/api/files/${annotation.file_path.file_id}`
-          );
-        }
-      })
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
-    });
-    
-  }
-
   return (
     <div className={styles.chatContainer}>
       <div className={styles.messages}>
         {messages.map((msg, index) => (
-          <Message key={index} role={msg.role} text={msg.text} />
+          <Message key={index} role={msg.role} text={msg.text} selectedVoice={selectedVoice} />
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -261,11 +283,12 @@ const Chat = ({
         className={`${styles.inputForm} ${styles.clearfix}`}
       >
         <input
+          ref={inputRef}
           type="text"
           className={styles.input}
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          placeholder="Enter your question"
+          placeholder="Begin speaking then press send"
         />
         <button
           type="submit"
@@ -275,6 +298,22 @@ const Chat = ({
           Send
         </button>
       </form>
+      <div className={styles.voiceSelector}>
+        <label htmlFor="voice">Choose a voice:</label>
+        <select
+          id="voice"
+          onChange={(e) => {
+            const selected = voices.find(voice => voice.name === e.target.value);
+            setSelectedVoice(selected || null);
+          }}
+        >
+          {voices.map((voice, index) => (
+            <option key={index} value={voice.name}>
+              {voice.name} ({voice.lang})
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };
