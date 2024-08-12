@@ -258,18 +258,14 @@ const Chat = ({
   };
 
   const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!userInput.trim()) return;
-    sendMessage(userInput);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { role: "user", text: userInput },
-    ]);
-    setUserInput("");
-    setInputDisabled(true);
-    scrollToBottom();
-  };
+  if (e) e.preventDefault();
+  if (!userInput.trim()) return;
 
+  sendMessage(userInput);
+  setUserInput("");
+  setInputDisabled(true);
+  scrollToBottom();
+};
   return (
     <div className={styles.chatContainer}>
       <div className={styles.messages}>
