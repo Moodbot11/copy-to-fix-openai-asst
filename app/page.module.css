@@ -32,6 +32,24 @@
   margin: 2rem 0;
 }
 
+/* Existing Category Buttons */
+.existingCategory {
+  display: block;
+  padding: 1rem 2rem;
+  margin: 1rem;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #007bff;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.existingCategory:hover {
+  background-color: #0056b3;
+}
+
+/* New Travel Buttons */
 .service {
   display: block;
   padding: 1rem 2rem;
