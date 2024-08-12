@@ -1,8 +1,7 @@
 "use client";
-
 import React from "react";
 import styles from "./page.module.css";
-import Chat from "./components/chat";
+import Chat from "../../components/chat"; // Import the Chat component
 
 const Home = () => {
   const categories = {
@@ -10,21 +9,15 @@ const Home = () => {
     "Function calling": "function-calling",
     "File search": "file-search",
     All: "all",
-return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <Chat />
-      </div>
-    </main>
-  );
-};
-    
   };
 
   return (
     <main className={styles.main}>
       <div className={styles.title}>
         Explore sample apps built with Assistants API
+      </div>
+      <div className={styles.container}>
+        <Chat /> {/* Add the Chat component here */}
       </div>
       <div className={styles.container}>
         {Object.entries(categories).map(([name, url]) => (
