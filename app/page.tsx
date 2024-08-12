@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
 declare global {
@@ -10,23 +10,33 @@ declare global {
 }
 
 const Home = () => {
-  const newCategories = {
-    "Car Rentals": "car-rentals",
-    "Flights": "flights",
-    "Hotels": "hotels",
-    "Vacation Packages": "vacation-packages",
-    "Cruises": "cruises",
-    "Travel Insurance": "travel-insurance",
-  };
-
-  const existingCategories = {
-    "Voice chat-GPT4o": "basic-chat",
-    "Function calling": "function-calling",
-    "Knowledge Base": "file-search",
-    All: "all",
-  };
+  const [prices, setPrices] = useState({
+    expedia: null,
+    travelocity: null,
+    priceline: null,
+    myPrice: null,
+  });
 
   useEffect(() => {
+    const fetchPrices = async () => {
+      const expediaPrice = await fetchExpediaPrice();
+      const travelocityPrice = await fetchTravelocityPrice();
+      const pricelinePrice = await fetchPricelinePrice();
+
+      const lowestPrice = Math.min(expediaPrice, travelocityPrice, pricelinePrice);
+
+      const myPrice = (lowestPrice - 5).toFixed(2);
+
+      setPrices({
+        expedia: expediaPrice,
+        travelocity: travelocityPrice,
+        priceline: pricelinePrice,
+        myPrice,
+      });
+    };
+
+    fetchPrices();
+
     const assistant = "80aecc7e-9537-4240-91e6-642c0c5cb976"; // Substitute with your assistant ID
     const apiKey = "f5c80ab3-a42b-4544-a3a2-ff019e8b7913"; // Substitute with your Public key from Vapi Dashboard.
 
@@ -107,32 +117,79 @@ const Home = () => {
     };
   }, []);
 
+  const fetchExpediaPrice = async () => {
+    // Replace with actual API call
+    return 150.0;
+  };
+
+  const fetchTravelocityPrice = async () => {
+    // Replace with actual API call
+    return 145.0;
+  };
+
+  const fetchPricelinePrice = async () => {
+    // Replace with actual API call
+    return 148.0;
+  };
+
   return (
     <main className={styles.main}>
       <header className={styles.header}>
         <h1>Plan Your Perfect Trip with Our Comprehensive Travel Services</h1>
         <p>From flights to car rentals, we've got you covered. Discover the best deals and travel packages.</p>
       </header>
-      <div className={styles.servicesContainer}>
-        {/* Existing Buttons */}
-        {Object.entries(existingCategories).map(([name, url]) => (
+      
+      {/* Original AI-related buttons */}
+      <div className={styles.buttonRow}>
+        {Object.entries({
+          "Voice chat-GPT4o": "basic-chat",
+          "Function calling": "function-calling",
+          "Knowledge Base": "file-search",
+          All: "all",
+        }).map(([name, url]) => (
           <a key={name} className={styles.existingCategory} href={`/examples/${url}`}>
             {name}
           </a>
         ))}
-        {/* New Travel Buttons */}
-        {Object.entries(newCategories).map(([name, url]) => (
+      </div>
+
+      {/* New travel-related buttons */}
+      <div className={styles.buttonRow}>
+        {Object.entries({
+          "Car Rentals": "car-rentals",
+          "Flights": "flights",
+          "Hotels": "hotels",
+          "Vacation Packages": "vacation-packages",
+          "Cruises": "cruises",
+          "Travel Insurance": "travel-insurance",
+        }).map(([name, url]) => (
           <a key={name} className={styles.service} href={`/services/${url}`}>
             {name}
           </a>
         ))}
       </div>
-      <section className={styles.featureSection}>
-        <div className={styles.feature}>
-          <h2>Why Choose Us?</h2>
-          <p>We offer the best deals and packages for all your travel needs. With 24/7 customer support, you can travel with peace of mind.</p>
+
+      {/* Price Comparison Section */}
+      <section className={styles.comparisonBox}>
+        <h2>Compare Prices</h2>
+        <div className={styles.priceRow}>
+          <div className={styles.priceSource}>Expedia</div>
+          <div className={styles.priceValue}>${prices.expedia}</div>
+        </div>
+        <div className={styles.priceRow}>
+          <div className={styles.priceSource}>Travelocity</div>
+          <div className={styles.priceValue}>${prices.travelocity}</div>
+        </div>
+        <div className={styles.priceRow}>
+          <div className={styles.priceSource}>Priceline</div>
+          <div className={styles.priceValue}>${prices.priceline}</div>
+        </div>
+        <div className={styles.priceRow}>
+          <div className={styles.priceSource}>Our Price</div>
+          <div className={styles.priceValueBest}>${prices.myPrice}</div>
         </div>
       </section>
+
       <section className={styles.widgetSection}>
         <div className={styles.widget} id="vapi-widget">
           {/* The Vapi widget will be injected here */}
@@ -141,6 +198,7 @@ const Home = () => {
           <h3>Need help? Call us at +1 (310) 776 3204 – We're available 24/7</h3>
         </div>
       </section>
+      
       <footer className={styles.footer}>
         <p>&copy; 2024 Generative Solutions. All rights reserved.</p>
       </footer>
