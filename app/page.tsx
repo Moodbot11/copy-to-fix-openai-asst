@@ -2,9 +2,7 @@
 
 import React from "react";
 import styles from "./page.module.css";
-import Chat from "./components/chat"; // Import the Chat component
 
-// Single definition of the Home component
 const Home = () => {
   const categories = {
     "Basic chat": "basic-chat",
@@ -17,9 +15,6 @@ const Home = () => {
     <main className={styles.main}>
       <div className={styles.title}>
         Explore sample apps built with Assistants API
-      </div>
-      <div className={styles.container}>
-        <Chat /> {/* Add the Chat component here */}
       </div>
       <div className={styles.container}>
         {Object.entries(categories).map(([name, url]) => (
