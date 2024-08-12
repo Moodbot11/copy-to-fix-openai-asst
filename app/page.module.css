@@ -1,4 +1,4 @@
-.main {
+main {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -45,19 +45,3 @@
 .category:hover {
   background-color: #e3e3eb;
 }
-.chatContainer {
-  display: flex;
-  flex-direction: column-reverse;
-  height: 100%;
-  width: 100%;
-}
-
-.inputForm {
-  display: flex;
-  width: 100%;
-  padding: 10px;
-  padding-bottom: 40px;
-  order: 1;
-}
-
-
