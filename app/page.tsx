@@ -118,17 +118,14 @@ const Home = () => {
   }, []);
 
   const fetchExpediaPrice = async () => {
-    // Replace with actual API call
     return 150.0;
   };
 
   const fetchTravelocityPrice = async () => {
-    // Replace with actual API call
     return 145.0;
   };
 
   const fetchPricelinePrice = async () => {
-    // Replace with actual API call
     return 148.0;
   };
 
@@ -169,24 +166,28 @@ const Home = () => {
         ))}
       </div>
 
-      {/* Price Comparison Section */}
+      {/* Enhanced Price Comparison Section */}
       <section className={styles.comparisonBox}>
         <h2>Compare Prices</h2>
         <div className={styles.priceRow}>
           <div className={styles.priceSource}>Expedia</div>
           <div className={styles.priceValue}>${prices.expedia}</div>
+          <button className={styles.compareButton}>Check Expedia</button>
         </div>
         <div className={styles.priceRow}>
           <div className={styles.priceSource}>Travelocity</div>
           <div className={styles.priceValue}>${prices.travelocity}</div>
+          <button className={styles.compareButton}>Check Travelocity</button>
         </div>
         <div className={styles.priceRow}>
           <div className={styles.priceSource}>Priceline</div>
           <div className={styles.priceValue}>${prices.priceline}</div>
+          <button className={styles.compareButton}>Check Priceline</button>
         </div>
-        <div className={styles.priceRow}>
+        <div className={`${styles.priceRow} ${styles.bestPriceRow}`}>
           <div className={styles.priceSource}>Our Price</div>
           <div className={styles.priceValueBest}>${prices.myPrice}</div>
+          <button className={styles.bestPriceButton}>Join Now</button>
         </div>
       </section>
 
