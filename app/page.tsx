@@ -5,7 +5,12 @@ import styles from "./page.module.css";
 import Chat from "./components/chat";
 
 const Home = () => {
-  return (
+  const categories = {
+    "Basic chat": "basic-chat",
+    "Function calling": "function-calling",
+    "File search": "file-search",
+    All: "all",
+return (
     <main className={styles.main}>
       <div className={styles.container}>
         <Chat />
@@ -13,13 +18,7 @@ const Home = () => {
     </main>
   );
 };
-
-const Home = () => {
-  const categories = {
-    "Basic chat": "basic-chat",
-    "Function calling": "function-calling",
-    "File search": "file-search",
-    All: "all",
+    
   };
 
   return (
