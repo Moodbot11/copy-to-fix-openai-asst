@@ -32,7 +32,6 @@
   margin-bottom: 2rem;
 }
 
-/* Existing AI-related buttons */
 .existingCategory {
   display: block;
   padding: 1rem 2rem;
@@ -48,7 +47,6 @@
   background-color: #0056b3;
 }
 
-/* New travel-related buttons */
 .service {
   display: block;
   padding: 1rem 2rem;
@@ -61,6 +59,77 @@
 }
 
 .service:hover {
+  background-color: #218838;
+}
+
+/* Enhanced Price Comparison Section */
+.comparisonBox {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.bestPriceRow {
+  background-color: #e9ffe8;
+  border-radius: 10px;
+}
+
+.priceSource {
+  font-weight: bold;
+  flex: 1;
+  text-align: left;
+}
+
+.priceValue {
+  color: #333;
+  flex: 1;
+  text-align: center;
+}
+
+.priceValueBest {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.compareButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.compareButton:hover {
+  background-color: #0056b3;
+}
+
+.bestPriceButton {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bestPriceButton:hover {
   background-color: #218838;
 }
 
