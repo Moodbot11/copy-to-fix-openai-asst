@@ -5,48 +5,9 @@ import styles from "./page.module.css";
 
 declare global {
   interface Window {
-    vapiSDK: any;
+    idecide: any;
   }
 }
-
-const Home = () => {
-  const [prices, setPrices] = useState({
-    expedia: null,
-    travelocity: null,
-    priceline: null,
-    myPrice: null,
-  });
-https://myidecide.net/XVI8RE  useEffect(() => {
-    const fetchPrices = async () => {
-      const expediaPrice = await fetchExpediaPrice();
-      const travelocityPrice = await fetchTravelocityPrice();
-      const pricelinePrice = await fetchPricelinePrice();
-
-      const lowestPrice = Math.min(expediaPrice, travelocityPrice, pricelinePrice);
-
-      const myPrice = (lowestPrice - 5).toFixed(2);
-
-      setPrices({
-        expedia: expediaPrice,
-        travelocity: travelocityPrice,
-        priceline: pricelinePrice,
-        myPrice,
-      });
-    };
-
-    fetchPrices();
-const http = require('https');
-
-const options = {
-	method: 'GET',
-	hostname: 'compare-flight-prices.p.rapidapi.com',
-	port: null,
-	path: '/GetPricesAPI/GetPrices.aspx',
-	headers: {
-		'x-rapidapi-key': '9fbfad16e4mshc8bff8c81c7cdcfp12a178jsnf38a2c8492f2',
-		'x-rapidapi-host': 'compare-flight-prices.p.rapidapi.com'
-	}
-};
 
 const req = http.request(options, function (res) {
 	const chunks = [];
@@ -62,78 +23,18 @@ const req = http.request(options, function (res) {
 });
 
 req.end();    
-    const assistant = "80aecc7e-9537-4240-91e6-642c0c5cb976"; // Substitute with your assistant ID
-    const apiKey = "f5c80ab3-a42b-4544-a3a2-ff019e8b7913"; // Substitute with your Public key from Vapi Dashboard.
 
-    const buttonConfig = {
-      position: "right",
-      offset: "465px",
-      width: "480px",
-      height: "130px",
-      idle: {
-        color: `rgb(93, 254, 202)`,
-        type: "pill",
-        title: "I'm here for you 24 hours a day",
-        subtitle: "Talk to me, let's figure it out.",
-        icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone.svg`,
-      },
-      loading: {
-        color: `rgb(93, 124, 202)`,
-        type: "pill",
-        title: "Connecting...",
-        subtitle: "Please wait",
-        icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
-      },
-      active: {
-        color: `rgb(255, 0, 0)`,
-        type: "pill",
-        title: "I'm here with you now",
-        subtitle: "End the call.",
-        icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg`,
-      },
-    };
 
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    script.src = "https://myidecide.net/XVI8RE";
     script.defer = true;
     script.async = true;
 
-    script.onload = () => {
-      const vapiInstance = window.vapiSDK.run({
-        apiKey: apiKey,
-        assistant: assistant,
-        config: buttonConfig,
-        parentElement: document.getElementById("vapi-widget"),
-      });
-
-      vapiInstance.on("speech-start", () => {
-        console.log("Speech has started");
-      });
-
-      vapiInstance.on("speech-end", () => {
-        console.log("Speech has ended");
-      });
-
-      vapiInstance.on("call-start", () => {
-        console.log("Call has started");
-      });
-
-      vapiInstance.on("call-end", () => {
+ 
         console.log("Call has stopped");
       });
 
-      vapiInstance.on("volume-level", (volume) => {
-        console.log(`Assistant volume level: ${volume}`);
-      });
-
-      vapiInstance.on("message", (message) => {
-        console.log(message);
-      });
-
-      vapiInstance.on("error", (e) => {
-        console.error(e);
-      });
-    };
+      
 
     document.body.appendChild(script);
 
@@ -141,18 +42,6 @@ req.end();
       document.body.removeChild(script);
     };
   }, []);
-
-  const fetchExpediaPrice = async () => {
-    return 150.0;
-  };
-
-  const fetchTravelocityPrice = async () => {
-    return 145.0;
-  };
-
-  const fetchPricelinePrice = async () => {
-    return 148.0;
-  };
 
   return (
     <main className={styles.main}>
