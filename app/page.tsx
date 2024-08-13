@@ -16,8 +16,7 @@ const Home = () => {
     priceline: null,
     myPrice: null,
   });
-
-  useEffect(() => {
+https://myidecide.net/XVI8RE  useEffect(() => {
     const fetchPrices = async () => {
       const expediaPrice = await fetchExpediaPrice();
       const travelocityPrice = await fetchTravelocityPrice();
